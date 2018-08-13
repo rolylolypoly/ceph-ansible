@@ -227,9 +227,6 @@
       set_fact:
         ceph_current_status: "{{ ceph_current_status.stdout | from_json }}"
 
-    - name: set_fact rgw_hostname
-      set_fact:
-        rgw_hostname: "{% for key in ceph_current_status['servicemap']['services']['rgw']['daemons'].keys() %}{% if key == ansible_fqdn %}{{ key }}{% endif %}{% endfor %}"
   when:
     - ceph_current_fsid.get('rc', 1) == 0
     - inventory_hostname in groups.get(rgw_group_name, [])
