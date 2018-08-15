@@ -6,11 +6,16 @@
   with_items:
     - "{{ cephfs_pools }}"
 
-- name: enable erasure coded pools for cephfs
-  command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
-  with_items:
-    - "{{ cephfs_pools }}"
+- name: configure erasure profile
+  command: "ceph osd erasure-code-profile set default plugin=lrc k=1 m=1 l=1 crush-locality=host crush-failure-domain=osd"
   when:
+    - item.type is defined
+    - item.type == "erasure"
+
+- name: enable erasure coded pool for cephfs_data
+  command: "ceph osd pool set {{ cephfs_data }} allow_ec_overwrites true"
+  when:
+    - item.type is defined
     - item.type == "erasure"
 
 - name: check if ceph filesystem already exists
