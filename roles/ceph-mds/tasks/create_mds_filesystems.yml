@@ -40,6 +40,7 @@
     args:
       chdir: /root
   - command: "ceph os pool set {{ cephfs_data }} min_size 1"
+  - command: "ceph osd pool set {{ cephfs_data }} allow_ec_overwrites true"
   when:
     - cephfs_data.type is defined
     - cephfs_data.type == "erasure"
