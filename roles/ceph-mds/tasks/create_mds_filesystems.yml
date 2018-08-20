@@ -19,7 +19,7 @@
     - cephfs_data.type == "erasure"
 
 - name: enable erasure coded test mode
-- block:
+  block:
   - command: "ceph osd getcrushmap -o ansible_crush_map_compressed"
     args:
       chdir: /root
