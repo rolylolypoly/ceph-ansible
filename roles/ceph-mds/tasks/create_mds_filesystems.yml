@@ -13,6 +13,7 @@
   when:
     - item.type exists
     - item.type == "erasure"
+    - common_single_host_mode == true
 
 - name: check if ceph filesystem already exists
   command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs get {{ cephfs }}"
