@@ -36,8 +36,6 @@
     - file:
         path: /root/ansible_crush_map_compressed
         state: absent
-  with_items:
-    - "{{ cephfs_pools }}"
   when:
     - item.type is defined
     - item.type == "erasure"
