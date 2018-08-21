@@ -8,12 +8,19 @@
 
 - name: enable test mode
   include_tasks: test_mode.yml
+  when:
+    - common_single_host_mode == true
+
+- name: set erasure coding profile
+  command: "ceph osd erasure-code-profile set default plugin=lrc k=2 m=2 l=2 crush-locality=host crush-failure-domain=osd --force"
+
+- name: allow erasure coding overwrites
+  command: "ceph osd pool set {{ item }} allow_ec_overwrites true"
   with_items:
   - "{{ cephfs_pools }}"
   when:
-    - item.type exists
-    - item.type == "erasure"
-    - common_single_host_mode == true
+  - item.type exists
+  - item.type == "erasure"
 
 - name: check if ceph filesystem already exists
   command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs get {{ cephfs }}"
