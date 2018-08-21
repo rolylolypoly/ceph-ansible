@@ -1,11 +1,11 @@
 ---
 - name: enable erasure coded test mode
   block:
-    - command: "ceph osd getcrushmap -o ansible_crush_map_compressed"
+    - command: "ceph osd getcrushmap -o /root/ansible_crush_map_compressed"
       args:
         chdir: /root
         creates: /root/ansible_crush_map_compressed
-    - command: "crushtool -d crush_map_compressed -o ansible_crush_map_decompressed"
+    - command: "crushtool -d crush_map_compressed -o /root/ansible_crush_map_decompressed"
       args:
         chdir: /root
         creates: /root/ansible_crush_map_decompressed
@@ -13,11 +13,11 @@
         path: /root/ansible_crush_map_decompressed
         regexp: "step chooseleaf indep 0 type host"
         replace: "step chooseleaf indep 0 type osd"
-    - command: "crushtool -c crush_map_decompressed -o ansible_new_crush_map_compressed"
+    - command: "crushtool -c crush_map_decompressed -o /root/ansible_new_crush_map_compressed"
       args:
         chdir: /root
         creates: /root/ansible_new_crush_map_decompressed
-    - command: "ceph osd setcrushmap -i ansible_new_crush_map_compressed"
+    - command: "ceph osd setcrushmap -i /root/ansible_new_crush_map_compressed"
       args:
         chdir: /root
     - command: "ceph osd pool set {{ item }} allow_ec_overwrites true"
