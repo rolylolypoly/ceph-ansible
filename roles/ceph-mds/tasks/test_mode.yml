@@ -1,7 +1,6 @@
 ---
 - name: enable erasure coded test mode
   block:
-    - command: "ceph osd pool set {{ item.name }} min_size 1"
     - file:
         path: /root/ansible_new_crush_map_decompressed
         state: absent
@@ -29,3 +28,4 @@
         chdir: /root
     - command: "ceph osd erasure-code-profile set default plugin=lrc k=1 m=1 l=1 crush-locality=host crush-failure-domain=osd"
     - command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
+    - command: "ceph osd pool set {{ item.name }} min_size 1"
