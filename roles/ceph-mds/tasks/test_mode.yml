@@ -31,5 +31,5 @@
       args:
         chdir: /root
     - command: "ceph osd erasure-code-profile set default plugin=lrc k=2 m=2 l=2 crush-locality=host crush-failure-domain=osd --force"
-    - command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
-    - command: "ceph osd pool set {{ item.name }} min_size 1"
+    - command: "ceph osd pool set cephfs_data allow_ec_overwrites true"
+    - command: "ceph osd pool set cephfs_data min_size 1"
