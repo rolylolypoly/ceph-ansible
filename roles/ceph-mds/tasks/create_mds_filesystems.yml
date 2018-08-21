@@ -30,7 +30,7 @@
   failed_when: false
 
 - name: create ceph filesystem
-  command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs new {{ cephfs }} {{ cephfs_metadata }} {{ item }}"
+  command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs new {{ cephfs }} {{ cephfs_metadata }}"
   changed_when: false
   delegate_to: "{{ groups[mon_group_name][0] }}"
   when:
