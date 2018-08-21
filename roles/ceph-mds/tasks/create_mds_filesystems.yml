@@ -16,7 +16,7 @@
   with_items:
   - "{{ cephfs_pools }}"
   when:
-  - item.type exists
+  - item.type is defined
   - item.type == "erasure"
 
 - name: allow erasure coding overwrites
@@ -24,7 +24,7 @@
   with_items:
   - "{{ cephfs_pools }}"
   when:
-  - item.type exists
+  - item.type is defined
   - item.type == "erasure"
 
 - name: check if ceph filesystem already exists
