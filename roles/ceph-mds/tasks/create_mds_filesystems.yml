@@ -13,6 +13,11 @@
 
 - name: set erasure coding profile
   command: "ceph osd erasure-code-profile set default plugin=lrc k=2 m=2 l=2 crush-locality=host crush-failure-domain=osd --force"
+  with_items:
+  - "{{ cephfs_pools }}"
+  when:
+  - item.type exists
+  - item.type == "erasure"
 
 - name: allow erasure coding overwrites
   command: "ceph osd pool set {{ item }} allow_ec_overwrites true"
