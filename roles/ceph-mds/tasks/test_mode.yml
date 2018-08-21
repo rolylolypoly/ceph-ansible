@@ -19,6 +19,10 @@
         path: /root/ansible_crush_map_decompressed
         regexp: "step chooseleaf indep 0 type host"
         replace: "step chooseleaf indep 0 type osd"
+    - replace:
+        path: /root/ansible_crush_map_decompressed
+        regexp: "min_size 3"
+        replace: "min_size 1"
     - command: "crushtool -c /root/ansible_crush_map_decompressed -o /root/ansible_new_crush_map_compressed"
       args:
         chdir: /root
