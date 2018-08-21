@@ -5,7 +5,7 @@
       args:
         chdir: /root
         creates: /root/ansible_crush_map_compressed
-    - command: "crushtool -d crush_map_compressed -o /root/ansible_crush_map_decompressed"
+    - command: "crushtool -d /root/acrush_map_compressed -o /root/ansible_crush_map_decompressed"
       args:
         chdir: /root
         creates: /root/ansible_crush_map_decompressed
