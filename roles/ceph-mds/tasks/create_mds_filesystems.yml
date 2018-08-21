@@ -6,86 +6,13 @@
   with_items:
     - "{{ cephfs_pools }}"
 
-- name: enable erasure coded test mode
-  block:
-    - command: "ceph osd getcrushmap -o ansible_crush_map_compressed"
-      args:
-        chdir: /root
-        creates: /root/ansible_crush_map_compressed
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "crushtool -d crush_map_compressed -o ansible_crush_map_decompressed"
-      args:
-        chdir: /root
-        creates: /root/ansible_crush_map_decompressed
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - replace:
-        path: /root/ansible_crush_map_decompressed
-        regexp: "step chooseleaf indep 0 type host"
-        replace: "step chooseleaf indep 0 type osd"
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "crushtool -c crush_map_decompressed -o ansible_new_crush_map_compressed"
-      args:
-        chdir: /root
-        creates: /root/ansible_new_crush_map_decompressed
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "ceph osd setcrushmap -i ansible_new_crush_map_compressed"
-      args:
-        chdir: /root
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "ceph osd pool set {{ cephfs_data  }} allow_ec_overwrites true"
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "ceph osd pool set {{ cephfs_data  }} min_size 1"
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - command: "ceph osd erasure-code-profile set default plugin=lrc k=1 m=1 l=1 crush-locality=host crush-failure-domain=osd"
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - file:
-        path: /root/ansible_new_crush_map_decompressed
-        state: absent
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
-    - file:
-        path: /root/ansible_crush_map_compressed
-        state: absent
-      with_items:
-      - "{{ cephfs_pools }}"
-      when:
-      - item.type is defined
-      - item.type == "erasure"
+- name: enable test mode
+  include_tasks: test_mode.yml
+  with_items:
+  - "{{ cephfs_pools }}"
+  when:
+    - item.type exists
+    - item.type == "erasure"
 
 - name: check if ceph filesystem already exists
   command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs get {{ cephfs }}"
