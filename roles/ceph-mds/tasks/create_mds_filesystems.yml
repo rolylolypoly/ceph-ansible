@@ -6,16 +6,12 @@
   with_items:
     - "{{ cephfs_pools }}"
 
-- name: enable test mode
-  include_tasks: test_mode.yml
-  when:
-    - common_single_host_mode == true
-
-- name: set erasure coding profile
-  command: "ceph osd erasure-code-profile set default plugin=lrc k=2 m=2 l=2 crush-locality=host crush-failure-domain=osd --force"
+- name: set erasure coding test profile
+  command: "ceph osd erasure-code-profile set default plugin=lrc mapping=DD layers='[ [ 'DDc', '' ] ]' crush-locality=osd crush-failure-domain=osd --force"
   with_items:
   - "{{ cephfs_pools }}"
   when:
+  - common_single_host_mode == true
   - item.type is defined
   - item.type == "erasure"
 
