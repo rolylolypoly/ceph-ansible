@@ -1,0 +1,32 @@
+---
+- name: enable erasure coded test mode
+  block:
+    - file:
+        path: /root/ansible_new_crush_map_decompressed
+        state: absent
+    - file:
+        path: /root/ansible_crush_map_compressed
+        state: absent
+    - command: "ceph osd getcrushmap -o /root/ansible_crush_map_compressed"
+      args:
+        chdir: /root
+        creates: /root/ansible_crush_map_compressed
+    - command: "crushtool -d /root/ansible_crush_map_compressed -o /root/ansible_crush_map_decompressed"
+      args:
+        chdir: /root
+        creates: /root/ansible_crush_map_decompressed
+    - replace:
+        path: /root/ansible_crush_map_decompressed
+        regexp: "step chooseleaf indep 0 type host"
+        replace: "step chooseleaf indep 0 type osd"
+    - replace:
+        path: /root/ansible_crush_map_decompressed
+        regexp: "min_size 3"
+        replace: "min_size 1"
+    - command: "crushtool -c /root/ansible_crush_map_decompressed -o /root/ansible_new_crush_map_compressed"
+      args:
+        chdir: /root
+        creates: /root/ansible_new_crush_map_decompressed
+    - command: "ceph osd setcrushmap -i /root/ansible_new_crush_map_compressed"
+      args:
+        chdir: /root
