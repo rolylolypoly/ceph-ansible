@@ -8,7 +8,7 @@
 
 - name: set erasure coding test profile
   command: >
-    ceph osd erasure-code-profile set default plugin=lrc mapping=DD layers="[ [ "DDc", '""' ] ]" crush-locality=osd crush-failure-domain=osd --force
+    ceph osd erasure-code-profile set default plugin=lrc mapping=DD layers="[ [ "DDc", '"''"' ] ]" crush-locality=osd crush-failure-domain=osd --force
   with_items:
   - "{{ cephfs_pools }}"
   when:
