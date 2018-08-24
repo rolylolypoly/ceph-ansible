@@ -6,12 +6,22 @@
   with_items:
     - "{{ cephfs_pools }}"
 
-- name: enable erasure coded pools for cephfs
+- name: set erasure coding test profile
+  command: "ceph osd erasure-code-profile set default plugin=lrc mapping=DD layers=\'[ [ 'DDc', \'\' ] ]\' crush-locality=osd crush-failure-domain=osd --force"
+  with_items:
+  - "{{ cephfs_pools }}"
+  when:
+  - common_single_host_mode == true
+  - item.type is defined
+  - item.type == "erasure"
+
+- name: allow erasure coding overwrites
   command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
   with_items:
-    - "{{ cephfs_pools }}"
+  - "{{ cephfs_pools }}"
   when:
-    - item.type == "erasure"
+  - item.type is defined
+  - item.type == "erasure"
 
 - name: check if ceph filesystem already exists
   command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} fs get {{ cephfs }}"
@@ -28,10 +38,7 @@
     - check_existing_cephfs.rc != 0
 
 - name: assign application to cephfs pools
-  command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} osd pool application enable {{ item }} {{ cephfs }}"
-  with_items:
-    - "{{ cephfs_data }}"
-    - "{{ cephfs_metadata }}"
+  command: "{{ hostvars[groups[mon_group_name][0]]['docker_exec_cmd'] | default('') }} ceph --cluster {{ cluster }} osd pool application enable {{ cephfs_data }} {{ cephfs }}"
   changed_when: false
   delegate_to: "{{ groups[mon_group_name][0] }}"
   when:
