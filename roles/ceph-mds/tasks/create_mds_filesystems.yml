@@ -11,7 +11,7 @@
     ceph osd erasure-code-profile set default
     plugin=lrc
     mapping=DD
-    layers='[ [ "DDc", " " ] ]\'
+    layers='[ [ "DDc", " " ] ]'
     crush-locality=osd
     crush-failure-domain=osd
     --force
