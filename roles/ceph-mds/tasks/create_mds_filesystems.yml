@@ -15,6 +15,11 @@
   - item.type is defined
   - item.type == "erasure"
 
+- name: enable test mode
+  include_tasks: test_mode.yml
+  when:
+    - common_single_host_mode == true
+
 - name: allow erasure coding overwrites
   command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
   with_items:
