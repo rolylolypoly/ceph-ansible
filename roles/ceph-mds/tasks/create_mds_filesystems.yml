@@ -20,6 +20,14 @@
   when:
     - common_single_host_mode == true
 
+- name: set cephfs pool size to 1 for testing
+  command: "ceph osd pool set {{ item.name }} size 1"
+  with_items:
+  - "{{ cephfs_pools }}"
+  when:
+  - item.type is defined
+  - item.type == "replicated"
+
 - name: allow erasure coding overwrites
   command: "ceph osd pool set {{ item.name }} allow_ec_overwrites true"
   with_items:
