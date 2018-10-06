@@ -1,8 +1,6 @@
 ---
-- name: include system_tuning.yml
-  include: system_tuning.yml
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
+- name: include_tasks system_tuning.yml
+  include_tasks: system_tuning.yml
 
 - name: install dependencies
   package:
@@ -12,16 +10,14 @@
     - not containerized_deployment
     - ansible_os_family != 'ClearLinux'
 
-- name: include common.yml
-  include: common.yml
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
+- name: include_tasks common.yml
+  include_tasks: common.yml
 
 - name: include ceph_disk_cli_options_facts.yml
-  include: ceph_disk_cli_options_facts.yml
+  include_tasks: ceph_disk_cli_options_facts.yml
 
 - name: include build_devices.yml
-  include: build_devices.yml
+  include_tasks: build_devices.yml
 
 - name: read information about the devices
   parted:
@@ -31,65 +27,51 @@
   with_items: "{{ devices }}"
 
 - name: include check_gpt.yml
-  include: check_gpt.yml
+  include_tasks: check_gpt.yml
   when:
     - osd_scenario != 'lvm'
 
-- name: include scenarios/collocated.yml
-  include: scenarios/collocated.yml
+- name: include_tasks scenarios/collocated.yml
+  include_tasks: scenarios/collocated.yml
   when:
     - osd_scenario == 'collocated'
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include scenarios/non-collocated.yml
-  include: scenarios/non-collocated.yml
+- name: include_tasks scenarios/non-collocated.yml
+  include_tasks: scenarios/non-collocated.yml
   when:
     - not osd_auto_discovery
     - osd_scenario == 'non-collocated'
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include scenarios/lvm.yml
-  include: scenarios/lvm.yml
+- name: include_tasks scenarios/lvm.yml
+  include_tasks: scenarios/lvm.yml
   when:
     - osd_scenario == 'lvm'
     - lvm_volumes|length > 0
     - not containerized_deployment
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include scenarios/lvm-batch.yml
-  include: scenarios/lvm-batch.yml
+- name: include_tasks scenarios/lvm-batch.yml
+  include_tasks: scenarios/lvm-batch.yml
   when:
     - osd_scenario == 'lvm'
     - devices|length > 0
     - not containerized_deployment
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include activate_osds.yml
-  include: activate_osds.yml
+- name: include_tasks activate_osds.yml
+  include_tasks: activate_osds.yml
   when:
     - not containerized_deployment
     - osd_scenario != 'lvm'
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include start_osds.yml
-  include: start_osds.yml
+- name: include_tasks start_osds.yml
+  include_tasks: start_osds.yml
   when:
     - not containerized_deployment
     - osd_scenario != 'lvm'
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
-- name: include docker/main.yml
-  include: docker/main.yml
+- name: include_tasks docker/main.yml
+  include_tasks: docker/main.yml
   when:
     - containerized_deployment
-  # Hard code this so we will skip the entire file instead of individual tasks (Default isn't Consistent)
-  static: False
 
 - name: set_fact openstack_keys_tmp - preserve backward compatibility after the introduction of the ceph_keys module
   set_fact:
@@ -107,7 +89,7 @@
 
 # Create the pools listed in openstack_pools
 - name: include openstack_config.yml
-  include: openstack_config.yml
+  include_tasks: openstack_config.yml
   when:
     - openstack_config
     - inventory_hostname == groups[osd_group_name] | last
